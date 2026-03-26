@@ -72,13 +72,18 @@ th, td {
 
 th { background:#1e293b; }
 
-.verde { background: rgba(34,197,94,0.15); }
-
+.verde { background: rgba(34,197,94,0.2); }
 .rojo { color:#ef4444; }
 
-.info {
-    font-size:12px;
-    opacity:0.7;
+.info { font-size:12px; opacity:0.7; }
+
+.highlight { color:#22c55e; font-weight:bold; }
+
+.dolar-box{
+display:flex;
+justify-content:space-around;
+font-weight:bold;
+font-size:18px;
 }
 </style>
 </head>
@@ -87,7 +92,7 @@ th { background:#1e293b; }
 
 <div class="container">
 
-<div class="card" id="dolarBox">Cargando dólar...</div>
+<div class="card dolar-box" id="dolarBox">Cargando dólar...</div>
 
 <button class="btn-toggle" onclick="cambiarMoneda()">
 Moneda: <span id="monedaTxt">ARS</span>
@@ -116,16 +121,10 @@ Moneda: <span id="monedaTxt">ARS</span>
 <h3>Inflación</h3>
 <input id="inflacion" placeholder="Inflación anual %">
 
-<button class="btn-toggle" onclick="cargarInflacion()">Usar inflación estimada</button>
-
 <label>
 <input type="checkbox" id="ajustarInflacion" checked>
  Ajustar por inflación
 </label>
-
-<p class="info">
-📉 Si está activado, los valores reflejan poder adquisitivo real
-</p>
 </div>
 
 <button class="btn-primary" onclick="calcular()">Calcular</button>
@@ -137,44 +136,32 @@ Moneda: <span id="monedaTxt">ARS</span>
 
 <canvas id="grafico"></canvas>
 
-<div class="ad">Publicidad</div>
-
 </div>
 
 <script>
+
 let chart;
-let dolar=1000;
+let dolarBlue=1000;
+let dolarOficial=800;
 let moneda="ARS";
 
 /* DOLAR */
 async function obtenerDolar(){
 try{
-let res=await fetch("https://dolarapi.com/v1/dolares/blue");
-let data=await res.json();
-dolar=data.venta;
+let blue = await fetch("https://dolarapi.com/v1/dolares/blue").then(r=>r.json());
+let oficial = await fetch("https://dolarapi.com/v1/dolares/oficial").then(r=>r.json());
+
+dolarBlue = blue.venta;
+dolarOficial = oficial.venta;
 
 document.getElementById("dolarBox").innerHTML=
-`💵 Dólar Blue: $${dolar}`;
+`💙 Blue: $${dolarBlue} | 🏦 Oficial: $${dolarOficial}`;
 
 }catch{
 document.getElementById("dolarBox").innerHTML="Error dólar";
 }
 }
 obtenerDolar();
-
-/* INFLACION */
-async function cargarInflacion(){
-try{
-let res=await fetch("https://api.argentinadatos.com/v1/finanzas/indices/inflacion");
-let data=await res.json();
-let ultimo=data[data.length-1].valor;
-let anual=ultimo*12;
-
-document.getElementById("inflacion").value=anual.toFixed(2);
-}catch{
-alert("Error inflación");
-}
-}
 
 /* MONEDA */
 function cambiarMoneda(){
@@ -184,7 +171,9 @@ document.getElementById("monedaTxt").innerText=moneda;
 
 /* FORMATO */
 function f(v){
-return moneda==="USD" ? "$"+(v/dolar).toFixed(2) : "$"+v.toFixed(0);
+return moneda==="USD" 
+? "$"+(v/dolarBlue).toFixed(2)
+: "$"+v.toLocaleString("es-AR");
 }
 
 function calcular(){
@@ -194,20 +183,23 @@ let activos=+document.getElementById("activos").value||0;
 let precio=+document.getElementById("precio").value||0;
 
 if(moneda==="USD"){
-capital*=dolar;
-activos*=dolar;
-precio*=dolar;
+capital*=dolarBlue;
+activos*=dolarBlue;
+precio*=dolarBlue;
 }
 
 let tasa=(+document.getElementById("tasa").value||0)/100;
 let anios=+document.getElementById("anios").value||0;
 let aporte=+document.getElementById("aporte").value||0;
 let inflacion=(+document.getElementById("inflacion").value||0)/100;
-
 let ajustar=document.getElementById("ajustarInflacion").checked;
 
 let patrimonio=capital+activos;
 let restante=patrimonio-precio;
+
+/* 🧠 NUEVO CALCULO */
+let porcentaje = (precio/patrimonio)*100;
+let veces = patrimonio/precio;
 
 let tm=tasa/12;
 let im=inflacion/12;
@@ -218,7 +210,6 @@ let tabla=`<table><tr>
 </tr>`;
 
 let labels=[],sin=[],con=[];
-let dif=0;
 
 for(let i=1;i<=anios;i++){
 
@@ -233,7 +224,6 @@ s*=(1+tm);
 ic=(ic+aporte)*(1+tm);
 is=(is+aporte)*(1+tm);
 
-/* SOLO SI ESTA ACTIVADO */
 if(ajustar){
 c/=(1+im);
 s/=(1+im);
@@ -241,8 +231,6 @@ ic/=(1+im);
 is/=(1+im);
 }
 }
-
-dif=is-ic;
 
 tabla+=`<tr>
 <td>${i}</td>
@@ -260,13 +248,20 @@ con.push(ic);
 tabla+="</table>";
 document.getElementById("tabla").innerHTML=tabla;
 
-let mensaje=dif>0?`<p class="rojo">💸 Pierdes ${f(dif)}</p>`:"";
+let dif=sin.at(-1)-con.at(-1);
 
 document.getElementById("resumen").innerHTML=`
-<h3>Resumen</h3>
-<p>Patrimonio: ${f(patrimonio)}</p>
-<p>Compra: ${f(precio)}</p>
-${mensaje}
+<h3>📊 Resumen</h3>
+
+<p>Patrimonio: <span class="highlight">${f(patrimonio)}</span></p>
+<p>Precio del bien: ${f(precio)}</p>
+
+<p>📉 Representa: <span class="rojo">${porcentaje.toFixed(2)}%</span> de tu patrimonio</p>
+<p>🧮 Podrías comprarlo <span class="highlight">${veces.toFixed(2)}</span> veces</p>
+
+<p class="${dif>0?'rojo':''}">
+${dif>0?'💸 Invertir es mejor que comprar':'✔ Comprar no afecta tanto'}
+</p>
 `;
 
 if(chart) chart.destroy();
@@ -281,7 +276,9 @@ datasets:[
 ]
 }
 });
+
 }
+
 </script>
 
 </body>
