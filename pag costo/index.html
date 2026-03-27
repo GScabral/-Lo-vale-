@@ -2,284 +2,382 @@
 <html lang="es">
 
 <head>
-<meta charset="UTF-8">
-<title>¿Lo vale?</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/-Lo-vale-/pag costo/Financial decision-making logo design.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Financiera Argentina 2026</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Librerías reales -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
 
-<style>
-body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #020617, #0f172a);
-    color: #e2e8f0;
-    padding: 20px;
-}
+    <style>
+        :root {
+            --bg: #020617;
+            --card: #1e293b;
+            --accent: #22c55e;
+            --text: #e2e8f0;
+            --blue-dollar: #2563eb;
+        }
 
-.container { max-width: 1100px; margin: auto; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg), #0f172a);
+            color: var(--text);
+            padding: 20px;
+            margin: 0;
+        }
 
-.card {
-    background: rgba(30,41,59,0.7);
-    padding: 20px;
-    border-radius: 14px;
-    margin-bottom: 15px;
-}
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
 
-input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    background: #020617;
-    color: white;
-    margin-bottom: 10px;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
 
-button {
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-}
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-.btn-primary { background:#22c55e; }
-.btn-toggle { background:#1e293b; color:#94a3b8; }
+        .dolar-box {
+            border-left: 5px solid var(--blue-dollar);
+            display: flex;
+            justify-content: space-around;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
 
-.ad {
-    background: #020617;
-    border: 1px dashed #334155;
-    padding: 15px;
-    text-align: center;
-    margin: 20px 0;
-    border-radius: 10px;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+        label {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 10px;
+            display: block;
+        }
 
-th, td {
-    padding: 8px;
-    text-align: center;
-}
+        button {
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
 
-th { background:#1e293b; }
+        .btn-primary {
+            background: var(--accent);
+            color: #064e3b;
+        }
 
-.verde { background: rgba(34,197,94,0.2); }
-.rojo { color:#ef4444; }
+        .btn-primary:hover {
+            background: #16a34a;
+        }
 
-.info { font-size:12px; opacity:0.7; }
+        .btn-pdf {
+            background: #64748b;
+            color: white;
+        }
 
-.highlight { color:#22c55e; font-weight:bold; }
+        .btn-toggle {
+            background: #334155;
+            color: white;
+            width: auto;
+            padding: 8px 15px;
+        }
 
-.dolar-box{
-display:flex;
-justify-content:space-around;
-font-weight:bold;
-font-size:18px;
-}
-</style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            background: #0f172a;
+            color: var(--accent);
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .rojo {
+            color: #ef4444;
+        }
+
+        #graficoCont {
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
+        <div class="card dolar-box" id="dolarBox">Sincronizando datos... ⏳</div>
 
-<div class="card dolar-box" id="dolarBox">Cargando dólar...</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <button class="btn-toggle" onclick="cambiarMoneda()">Moneda: <span id="monedaTxt">ARS</span></button>
+            <span id="status" style="font-size: 12px; opacity: 0.6;">Cargando...</span>
+        </div>
 
-<button class="btn-toggle" onclick="cambiarMoneda()">
-Moneda: <span id="monedaTxt">ARS</span>
-</button>
+        <div class="grid">
+            <div class="card">
+                <h3>💰 Mis Fondos</h3>
+                <label>Capital Inicial</label>
+                <input type="number" id="capital">
+                <label>Otros Activos</label>
+                <input type="number" id="activos" value="0">
+                <label>Precio del Bien</label>
+                <input type="number" id="precio">
+            </div>
 
-<div class="ad">Publicidad</div>
+            <div class="card">
+                <h3>📈 Indicadores</h3>
+                <label>TNA (%)</label>
+                <input type="number" id="tasa">
+                <label>Inflación (%)</label>
+                <input type="number" id="inflacion">
+                <label>Aporte mensual</label>
+                <input type="number" id="aporte" value="0">
+                <label>Años</label>
+                <input type="number" id="anios" value="3">
+            </div>
+        </div>
 
-<div class="grid">
-<div class="card">
-<h3>Datos</h3>
-<input id="capital" placeholder="Capital">
-<input id="activos" placeholder="Activos">
-<input id="precio" placeholder="Precio del bien">
-</div>
+        <div class="card" style="text-align: center;">
+            <label>
+                <input type="checkbox" id="ajustarInflacion" checked style="width:auto;">
+                Ajustar por inflación
+            </label>
+            <button class="btn-primary" onclick="calcular()">ANALIZAR</button>
+            <button class="btn-pdf" onclick="generarPDF()">DESCARGAR PDF</button>
+        </div>
 
-<div class="card">
-<h3>Inversión</h3>
-<input id="tasa" placeholder="Tasa anual %">
-<input id="anios" placeholder="Años">
-<input id="aporte" placeholder="Aporte mensual">
-<input id="objetivo" placeholder="Objetivo mensual">
-</div>
-</div>
+        <div id="resumenArea" style="display:none;">
+            <div class="card" id="resumen"></div>
 
-<div class="card">
-<h3>Inflación</h3>
-<input id="inflacion" placeholder="Inflación anual %">
+            <!-- 👇 NUEVO BLOQUE EXPLICATIVO -->
+            <div class="card" id="explicacion"></div>
 
-<label>
-<input type="checkbox" id="ajustarInflacion" checked>
- Ajustar por inflación
-</label>
-</div>
+            <div id="graficoCont"><canvas id="grafico"></canvas></div>
+            <div class="card">
+                <div id="tabla"></div>
+            </div>
+        </div>
+    </div>
 
-<button class="btn-primary" onclick="calcular()">Calcular</button>
+    <script>
+        let chart;
+        let dolarBlue = 1430;
+        let moneda = "ARS";
 
-<div class="ad">Publicidad</div>
+        async function sincronizarMercado() {
+            const statusEl = document.getElementById("status");
+            try {
+                const res = await fetch("https://dolarapi.com/v1/dolares/blue");
+                const data = await res.json();
 
-<div class="card" id="resumen"></div>
-<div class="card" id="tabla"></div>
+                dolarBlue = data.venta;
 
-<canvas id="grafico"></canvas>
+                document.getElementById("dolarBox").innerHTML =
+                    `💵 Blue: $${data.venta} | 🏛️ Oficial: $${data.compra}`;
 
-</div>
+                document.getElementById("tasa").value = 45;
+                document.getElementById("inflacion").value = 120;
 
-<script>
+                statusEl.innerText = "✅ Actualizado";
+                statusEl.style.color = "#22c55e";
+            } catch {
+                document.getElementById("dolarBox").innerHTML =
+                    `💵 Blue: $1430 (Referencia)`;
 
-let chart;
-let dolarBlue=1000;
-let dolarOficial=800;
-let moneda="ARS";
+                document.getElementById("tasa").value = 45;
+                document.getElementById("inflacion").value = 120;
 
-/* DOLAR */
-async function obtenerDolar(){
-try{
-let blue = await fetch("https://dolarapi.com/v1/dolares/blue").then(r=>r.json());
-let oficial = await fetch("https://dolarapi.com/v1/dolares/oficial").then(r=>r.json());
+                statusEl.innerText = "⚠️ Offline";
+                statusEl.style.color = "#ef4444";
+            }
+        }
 
-dolarBlue = blue.venta;
-dolarOficial = oficial.venta;
+        function cambiarMoneda() {
+            moneda = moneda === "ARS" ? "USD" : "ARS";
+            document.getElementById("monedaTxt").innerText = moneda;
+        }
 
-document.getElementById("dolarBox").innerHTML=
-`💙 Blue: $${dolarBlue} | 🏦 Oficial: $${dolarOficial}`;
+        function f(v) {
+            return moneda === "USD"
+                ? "U$S " + (v / dolarBlue).toLocaleString("es-AR", { minimumFractionDigits: 2 })
+                : "$ " + v.toLocaleString("es-AR");
+        }
 
-}catch{
-document.getElementById("dolarBox").innerHTML="Error dólar";
-}
-}
-obtenerDolar();
+        function calcular() {
+            const capitalEl = document.getElementById("capital");
+            const activosEl = document.getElementById("activos");
+            const precioEl = document.getElementById("precio");
+            const aporteEl = document.getElementById("aporte");
+            const tasaEl = document.getElementById("tasa");
+            const inflacionEl = document.getElementById("inflacion");
+            const aniosEl = document.getElementById("anios");
+            const ajustarInflacion = document.getElementById("ajustarInflacion");
 
-/* MONEDA */
-function cambiarMoneda(){
-moneda = moneda==="ARS" ? "USD" : "ARS";
-document.getElementById("monedaTxt").innerText=moneda;
-}
+            let capital = +capitalEl.value || 0;
+            let activos = +activosEl.value || 0;
+            let precio = +precioEl.value || 0;
+            let aporte = +aporteEl.value || 0;
+            let tasa = (+tasaEl.value || 0) / 100;
+            let inflacion = (+inflacionEl.value || 0) / 100;
+            let anios = +aniosEl.value || 1;
+            let ajustar = ajustarInflacion.checked;
 
-/* FORMATO */
-function f(v){
-return moneda==="USD" 
-? "$"+(v/dolarBlue).toFixed(2)
-: "$"+v.toLocaleString("es-AR");
-}
+            let patrimonio = capital + activos;
+            let restante = patrimonio - precio;
 
-function calcular(){
+            let tm = Math.pow(1 + tasa, 1 / 12) - 1;
+            let im = Math.pow(1 + inflacion, 1 / 12) - 1;
+            let r = ajustar ? (1 + tm) / (1 + im) - 1 : tm;
 
-let capital=+document.getElementById("capital").value||0;
-let activos=+document.getElementById("activos").value||0;
-let precio=+document.getElementById("precio").value||0;
+            let labels = [], sin = [], con = [];
 
-if(moneda==="USD"){
-capital*=dolarBlue;
-activos*=dolarBlue;
-precio*=dolarBlue;
-}
-
-let tasa=(+document.getElementById("tasa").value||0)/100;
-let anios=+document.getElementById("anios").value||0;
-let aporte=+document.getElementById("aporte").value||0;
-let inflacion=(+document.getElementById("inflacion").value||0)/100;
-let ajustar=document.getElementById("ajustarInflacion").checked;
-
-let patrimonio=capital+activos;
-let restante=patrimonio-precio;
-
-/* 🧠 NUEVO CALCULO */
-let porcentaje = (precio/patrimonio)*100;
-let veces = patrimonio/precio;
-
-let tm=tasa/12;
-let im=inflacion/12;
-
-let tabla=`<table><tr>
-<th>Año</th><th>Comprando</th><th>Sin comprar</th>
-<th>Inv. comprando</th><th>Inv. sin comprar</th>
+            let html = `<table>
+<tr>
+<th>Año</th>
+<th>Invertir SIN comprar</th>
+<th>Invertir COMPRANDO</th>
+<th>Diferencia</th>
+<th>% vs SIN comprar</th>
+<th>% vs COMPRANDO</th>
 </tr>`;
 
-let labels=[],sin=[],con=[];
+            for (let i = 1; i <= anios; i++) {
+                let n = i * 12;
 
-for(let i=1;i<=anios;i++){
+                const vf = (p, a, t) =>
+                    t === 0
+                        ? p + a * n
+                        : p * Math.pow(1 + t, n) + a * ((Math.pow(1 + t, n) - 1) / t);
 
-let meses=i*12;
+                let v1 = vf(patrimonio, aporte, r);
+                let v2 = vf(restante, aporte, r);
 
-let c=restante,s=patrimonio,ic=restante,is=patrimonio;
+                let diferencia = v1 - v2;
 
-for(let m=0;m<meses;m++){
+                let porcentaje1 = v1 === 0 ? 0 : (diferencia / v1) * 100;
+                let porcentaje2 = v2 === 0 ? 0 : (diferencia / v2) * 100;
 
-c*=(1+tm);
-s*=(1+tm);
-ic=(ic+aporte)*(1+tm);
-is=(is+aporte)*(1+tm);
+                labels.push("Año " + i);
+                sin.push(v1);
+                con.push(v2);
 
-if(ajustar){
-c/=(1+im);
-s/=(1+im);
-ic/=(1+im);
-is/=(1+im);
-}
-}
-
-tabla+=`<tr>
+                html += `
+<tr>
 <td>${i}</td>
-<td>${f(c)}</td>
-<td>${f(s)}</td>
-<td>${f(ic)}</td>
-<td>${f(is)}</td>
+<td>${f(v1)}</td>
+<td>${f(v2)}</td>
+<td class="${diferencia < 0 ? 'rojo' : 'highlight'}">${f(diferencia)}</td>
+<td class="${diferencia < 0 ? 'rojo' : 'highlight'}">${porcentaje1.toFixed(2)}%</td>
+<td class="${diferencia < 0 ? 'rojo' : 'highlight'}">${porcentaje2.toFixed(2)}%</td>
 </tr>`;
+            }
 
-labels.push(i);
-sin.push(is);
-con.push(ic);
-}
+            document.getElementById("tabla").innerHTML = html + "</table>";
+            document.getElementById("resumenArea").style.display = "block";
 
-tabla+="</table>";
-document.getElementById("tabla").innerHTML=tabla;
+            let finalSin = sin.at(-1) || 0;
+            let finalCon = con.at(-1) || 0;
+            let difFinal = finalSin - finalCon;
+            let porcFinal = finalSin === 0 ? 0 : (difFinal / finalSin) * 100;
 
-let dif=sin.at(-1)-con.at(-1);
-
-document.getElementById("resumen").innerHTML=`
-<h3>📊 Resumen</h3>
-
-<p>Patrimonio: <span class="highlight">${f(patrimonio)}</span></p>
-<p>Precio del bien: ${f(precio)}</p>
-
-<p>📉 Representa: <span class="rojo">${porcentaje.toFixed(2)}%</span> de tu patrimonio</p>
-<p>🧮 Podrías comprarlo <span class="highlight">${veces.toFixed(2)}</span> veces</p>
-
-<p class="${dif>0?'rojo':''}">
-${dif>0?'💸 Invertir es mejor que comprar':'✔ Comprar no afecta tanto'}
-</p>
+            resumen.innerHTML = `
+<h3>Resultado</h3>
+<p>Diferencia final: <span class="${difFinal < 0 ? 'rojo' : 'highlight'}">${f(difFinal)}</span></p>
+<p>Impacto: <span class="${difFinal < 0 ? 'rojo' : 'highlight'}">${porcFinal.toFixed(2)}%</span></p>
 `;
 
-if(chart) chart.destroy();
+            // ✅ TEXTO EXPLICATIVO
+            document.getElementById("explicacion").innerHTML = `
+<h3>🧾 ¿Cómo leer este análisis?</h3>
+<p>Este cuadro compara dos decisiones:</p>
+<ul>
+<li><b>Invertir SIN comprar:</b> dejas todo tu dinero trabajando.</li>
+<li><b>Invertir COMPRANDO:</b> compras un bien y solo inviertes lo que te queda.</li>
+</ul>
+<p><b>Diferencia:</b> dinero extra que podrías tener si no compraras.</p>
+<p><b>Porcentajes:</b> indican qué tan grande es esa diferencia.</p>
+<p>⚠️ No es dinero perdido, es oportunidad.</p>
+<p>📉 Al principio impacta más, con el tiempo se reduce.</p>
+<p class="highlight">💡 A largo plazo, la decisión depende más de tu necesidad que del impacto financiero.</p>
+`;
 
-chart=new Chart(document.getElementById("grafico"),{
-type:"line",
-data:{
-labels,
-datasets:[
-{label:"Sin comprar",data:sin},
-{label:"Comprando",data:con}
-]
-}
-});
+            if (chart) chart.destroy();
 
-}
+            chart = new Chart(grafico, {
+                type: "line",
+                data: {
+                    labels,
+                    datasets: [
+                        { label: "Invertir sin comprar", data: sin, borderColor: "#22c55e" },
+                        { label: "Invertir comprando", data: con, borderColor: "#ef4444" }
+                    ]
+                }
+            });
+        }
 
-</script>
+        function generarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.text("Reporte Financiero", 15, 20);
+
+            doc.autoTable({
+                html: "#tabla table",
+                startY: 30
+            });
+
+            doc.save("reporte.pdf");
+        }
+
+        sincronizarMercado();
+    </script>
 
 </body>
+
 </html>
