@@ -1,383 +1,612 @@
+# Calculadora Financiera Argentina 2026 – versión corregida
+
+```html
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="/-Lo-vale-/pag costo/Financial decision-making logo design.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Financiera Argentina 2026</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Financiera Argentina 2026</title>
 
-    <!-- Librerías reales -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
 
-    <style>
-        :root {
-            --bg: #020617;
-            --card: #1e293b;
-            --accent: #22c55e;
-            --text: #e2e8f0;
-            --blue-dollar: #2563eb;
-        }
+  <style>
+    :root {
+      --bg: #020617;
+      --card: rgba(30,41,59,.78);
+      --border: #334155;
+      --text: #e2e8f0;
+      --accent: #22c55e;
+      --danger: #ef4444;
+      --muted: #94a3b8;
+      --blue: #2563eb;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg), #0f172a);
-            color: var(--text);
-            padding: 20px;
-            margin: 0;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Inter, system-ui, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: var(--text);
+    }
 
-        .card {
-            background: rgba(30, 41, 59, 0.7);
-            padding: 25px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            border: 1px solid #334155;
-        }
+    .container {
+      max-width: 1050px;
+      margin: auto;
+    }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
 
-        @media (max-width: 600px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 20px;
+      transition: transform .2s ease, box-shadow .2s ease;
+      backdrop-filter: blur(10px);
+    }
 
-        .dolar-box {
-            border-left: 5px solid var(--blue-dollar);
-            display: flex;
-            justify-content: space-around;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #020617;
-            color: white;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
+    .dolar-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      border-left: 5px solid var(--blue);
+      font-weight: 700;
+      font-size: 1rem;
+    }
 
-        label {
-            font-size: 13px;
-            opacity: 0.8;
-            margin-top: 10px;
-            display: block;
-        }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 20px;
+    }
 
-        button {
-            padding: 14px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            width: 100%;
-            margin-top: 10px;
-        }
+    @media (max-width: 760px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #064e3b;
-        }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 2rem;
+    }
 
-        .btn-primary:hover {
-            background: #16a34a;
-        }
+    h3 {
+      margin-top: 0;
+    }
 
-        .btn-pdf {
-            background: #64748b;
-            color: white;
-        }
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
 
-        .btn-toggle {
-            background: #334155;
-            color: white;
-            width: auto;
-            padding: 8px 15px;
-        }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: white;
+      font-size: 1rem;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 14px;
-        }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+    }
 
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #334155;
-        }
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
 
-        th {
-            background: #0f172a;
-            color: var(--accent);
-        }
+    .checkbox input {
+      width: auto;
+      margin: 0;
+    }
 
-        .highlight {
-            color: var(--accent);
-            font-weight: bold;
-        }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .2s ease;
+    }
 
-        .rojo {
-            color: #ef4444;
-        }
+    button:hover {
+      transform: translateY(-1px);
+    }
 
-        #graficoCont {
-            background: white;
-            border-radius: 12px;
-            padding: 10px;
-            margin-top: 20px;
-        }
-    </style>
+    .btn-primary {
+      background: var(--accent);
+      color: #052e16;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .btn-pdf {
+      width: 100%;
+      background: #475569;
+      color: white;
+    }
+
+    .btn-toggle {
+      background: #334155;
+      color: white;
+      min-width: 140px;
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .rojo {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: .92rem;
+    }
+
+    th {
+      background: #0f172a;
+      color: var(--accent);
+    }
+
+    #graficoCont {
+      background: white;
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .small {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    .warning {
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.35);
+      color: #fecaca;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      display: none;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <h1>Calculadora Financiera Argentina 2026</h1>
+    <p class="small">Compara cuánto dinero podrías conservar si compras un bien o si inviertes ese dinero.</p>
 
-    <div class="container">
-        <div class="card dolar-box" id="dolarBox">Sincronizando datos... ⏳</div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <button class="btn-toggle" onclick="cambiarMoneda()">Moneda: <span id="monedaTxt">ARS</span></button>
-            <span id="status" style="font-size: 12px; opacity: 0.6;">Cargando...</span>
-        </div>
-
-        <div class="grid">
-            <div class="card">
-                <h3>💰 Mis Fondos</h3>
-                <label>Capital Inicial</label>
-                <input type="number" id="capital">
-                <label>Otros Activos</label>
-                <input type="number" id="activos" value="0">
-                <label>Precio del Bien</label>
-                <input type="number" id="precio">
-            </div>
-
-            <div class="card">
-                <h3>📈 Indicadores</h3>
-                <label>TNA (%)</label>
-                <input type="number" id="tasa">
-                <label>Inflación (%)</label>
-                <input type="number" id="inflacion">
-                <label>Aporte mensual</label>
-                <input type="number" id="aporte" value="0">
-                <label>Años</label>
-                <input type="number" id="anios" value="3">
-            </div>
-        </div>
-
-        <div class="card" style="text-align: center;">
-            <label>
-                <input type="checkbox" id="ajustarInflacion" checked style="width:auto;">
-                Ajustar por inflación
-            </label>
-            <button class="btn-primary" onclick="calcular()">ANALIZAR</button>
-            <button class="btn-pdf" onclick="generarPDF()">DESCARGAR PDF</button>
-        </div>
-
-        <div id="resumenArea" style="display:none;">
-            <div class="card" id="resumen"></div>
-
-            <!-- 👇 NUEVO BLOQUE EXPLICATIVO -->
-            <div class="card" id="explicacion"></div>
-
-            <div id="graficoCont"><canvas id="grafico"></canvas></div>
-            <div class="card">
-                <div id="tabla"></div>
-            </div>
-        </div>
+    <div class="card dolar-box" id="dolarBox">
+      Sincronizando cotizaciones...
     </div>
 
-    <script>
-        let chart;
-        let dolarBlue = 1430;
-        let moneda = "ARS";
+    <div class="topbar">
+      <button class="btn-toggle" id="btnMoneda">Moneda: <span id="monedaTxt">ARS</span></button>
+      <span id="status" class="small">Cargando datos...</span>
+    </div>
 
-        async function sincronizarMercado() {
-            const statusEl = document.getElementById("status");
-            try {
-                const res = await fetch("https://dolarapi.com/v1/dolares/blue");
-                const data = await res.json();
+    <div class="warning" id="warning"></div>
 
-                dolarBlue = data.venta;
+    <div class="grid">
+      <div class="card">
+        <h3>💰 Fondos</h3>
 
-                document.getElementById("dolarBox").innerHTML =
-                    `💵 Blue: $${data.venta} | 🏛️ Oficial: $${data.compra}`;
+        <label>Capital inicial</label>
+        <input type="number" id="capital" min="0" step="1">
 
-                document.getElementById("tasa").value = 45;
-                document.getElementById("inflacion").value = 120;
+        <label>Otros activos</label>
+        <input type="number" id="activos" min="0" step="1" value="0">
 
-                statusEl.innerText = "✅ Actualizado";
-                statusEl.style.color = "#22c55e";
-            } catch {
-                document.getElementById("dolarBox").innerHTML =
-                    `💵 Blue: $1430 (Referencia)`;
+        <label>Precio del bien</label>
+        <input type="number" id="precio" min="0" step="1">
+      </div>
 
-                document.getElementById("tasa").value = 45;
-                document.getElementById("inflacion").value = 120;
+      <div class="card">
+        <h3>📈 Indicadores</h3>
 
-                statusEl.innerText = "⚠️ Offline";
-                statusEl.style.color = "#ef4444";
+        <label>TNA (%)</label>
+        <input type="number" id="tasa" min="0" step="0.01">
+
+        <label>Inflación anual (%)</label>
+        <input type="number" id="inflacion" min="0" step="0.01">
+
+        <label>Aporte mensual</label>
+        <input type="number" id="aporte" min="0" step="1" value="0">
+
+        <label>Años</label>
+        <input type="number" id="anios" min="1" step="1" value="3">
+      </div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div class="checkbox">
+        <input type="checkbox" id="ajustarInflacion" checked>
+        <label for="ajustarInflacion" style="margin:0;">Ajustar rendimiento por inflación</label>
+      </div>
+
+      <button class="btn-primary" id="btnAnalizar">ANALIZAR</button>
+      <button class="btn-pdf" id="btnPDF">DESCARGAR PDF</button>
+    </div>
+
+    <div id="resultado" style="display:none;">
+      <div class="card" id="resumen"></div>
+      <div class="card" id="explicacion"></div>
+      <div id="graficoCont">
+        <canvas id="grafico"></canvas>
+      </div>
+      <div class="card">
+        <div id="tabla"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let chart;
+    let moneda = 'ARS';
+    let dolarBlue = 1430;
+    let dolarOficial = 1000;
+
+    const formatoARS = new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      maximumFractionDigits: 0
+    });
+
+    const formatoUSD = new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const campos = ['capital','activos','precio','tasa','inflacion','aporte','anios'];
+
+    function guardarDatos() {
+      campos.forEach(id => localStorage.setItem(id, document.getElementById(id).value));
+      localStorage.setItem('ajustarInflacion', document.getElementById('ajustarInflacion').checked);
+    }
+
+    function cargarDatos() {
+      campos.forEach(id => {
+        const value = localStorage.getItem(id);
+        if (value !== null) document.getElementById(id).value = value;
+      });
+
+      const ajustar = localStorage.getItem('ajustarInflacion');
+      if (ajustar !== null) {
+        document.getElementById('ajustarInflacion').checked = ajustar === 'true';
+      }
+    }
+
+    function formatear(valor) {
+      return moneda === 'USD'
+        ? formatoUSD.format(valor / dolarBlue)
+        : formatoARS.format(valor);
+    }
+
+    async function sincronizarMercado() {
+      const status = document.getElementById('status');
+
+      try {
+        const [blueRes, oficialRes] = await Promise.all([
+          fetch('https://dolarapi.com/v1/dolares/blue'),
+          fetch('https://dolarapi.com/v1/dolares/oficial')
+        ]);
+
+        const blue = await blueRes.json();
+        const oficial = await oficialRes.json();
+
+        dolarBlue = blue.venta;
+        dolarOficial = oficial.venta;
+
+        document.getElementById('dolarBox').innerHTML = `
+          💵 Dólar blue: ${formatoARS.format(dolarBlue)}
+          ·
+          🏛️ Dólar oficial: ${formatoARS.format(dolarOficial)}
+        `;
+
+        if (!document.getElementById('tasa').value) document.getElementById('tasa').value = 45;
+        if (!document.getElementById('inflacion').value) document.getElementById('inflacion').value = 120;
+
+        status.textContent = '✓ Datos actualizados';
+        status.style.color = '#22c55e';
+      } catch (error) {
+        document.getElementById('dolarBox').innerHTML = `
+          💵 Dólar blue de referencia: ${formatoARS.format(dolarBlue)}
+        `;
+
+        status.textContent = '⚠ Sin conexión con la API';
+        status.style.color = '#ef4444';
+      }
+    }
+
+    function valorFuturo(capitalInicial, aporteMensual, tasaMensual, meses) {
+      if (tasaMensual === 0) {
+        return capitalInicial + (aporteMensual * meses);
+      }
+
+      return capitalInicial * Math.pow(1 + tasaMensual, meses) +
+        aporteMensual * ((Math.pow(1 + tasaMensual, meses) - 1) / tasaMensual);
+    }
+
+    function mostrarWarning(texto) {
+      const el = document.getElementById('warning');
+      el.textContent = texto;
+      el.style.display = 'block';
+    }
+
+    function ocultarWarning() {
+      document.getElementById('warning').style.display = 'none';
+    }
+
+    function calcular() {
+      ocultarWarning();
+      guardarDatos();
+
+      const capital = Number(document.getElementById('capital').value);
+      const activos = Number(document.getElementById('activos').value) || 0;
+      const precio = Number(document.getElementById('precio').value);
+      const aporte = Number(document.getElementById('aporte').value) || 0;
+      const tasa = Number(document.getElementById('tasa').value) / 100;
+      const inflacion = Number(document.getElementById('inflacion').value) / 100;
+      const anios = Number(document.getElementById('anios').value);
+      const ajustar = document.getElementById('ajustarInflacion').checked;
+
+      if (!capital || !precio || !anios) {
+        mostrarWarning('Debes completar capital inicial, precio del bien y años.');
+        return;
+      }
+
+      if (anios <= 0) {
+        mostrarWarning('Los años deben ser mayores que 0.');
+        return;
+      }
+
+      const patrimonio = capital + activos;
+
+      if (precio > patrimonio) {
+        mostrarWarning('El precio del bien supera tus fondos disponibles.');
+        return;
+      }
+
+      const restante = Math.max(0, patrimonio - precio);
+
+      const tasaMensual = Math.pow(1 + tasa, 1 / 12) - 1;
+      const inflacionMensual = Math.pow(1 + inflacion, 1 / 12) - 1;
+      const rendimientoReal = ajustar
+        ? ((1 + tasaMensual) / (1 + inflacionMensual)) - 1
+        : tasaMensual;
+
+      const labels = [];
+      const sinComprar = [];
+      const comprando = [];
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Año</th>
+              <th>Sin comprar</th>
+              <th>Comprando</th>
+              <th>Diferencia</th>
+              <th>Impacto %</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      for (let i = 1; i <= anios; i++) {
+        const meses = i * 12;
+
+        const v1 = valorFuturo(patrimonio, aporte, rendimientoReal, meses);
+        const v2 = valorFuturo(restante, aporte, rendimientoReal, meses);
+
+        const diferencia = v1 - v2;
+        const impacto = v1 === 0 ? 0 : (diferencia / v1) * 100;
+
+        labels.push(`Año ${i}`);
+        sinComprar.push(v1);
+        comprando.push(v2);
+
+        html += `
+          <tr>
+            <td>${i}</td>
+            <td>${formatear(v1)}</td>
+            <td>${formatear(v2)}</td>
+            <td class="${diferencia >= 0 ? 'highlight' : 'rojo'}">${formatear(diferencia)}</td>
+            <td class="${impacto >= 0 ? 'highlight' : 'rojo'}">${impacto.toFixed(2)}%</td>
+          </tr>
+        `;
+      }
+
+      html += '</tbody></table>';
+      document.getElementById('tabla').innerHTML = html;
+
+      const finalSin = sinComprar.at(-1);
+      const finalCon = comprando.at(-1);
+      const diferenciaFinal = finalSin - finalCon;
+      const impactoFinal = (diferenciaFinal / finalSin) * 100;
+
+      document.getElementById('resumen').innerHTML = `
+        <h3>📊 Resultado final</h3>
+        <p>Patrimonio proyectado sin comprar: <span class="highlight">${formatear(finalSin)}</span></p>
+        <p>Patrimonio proyectado comprando: <span class="highlight">${formatear(finalCon)}</span></p>
+        <p>Diferencia final: <span class="${diferenciaFinal >= 0 ? 'highlight' : 'rojo'}">${formatear(diferenciaFinal)}</span></p>
+        <p>Impacto estimado: <span class="${impactoFinal >= 0 ? 'highlight' : 'rojo'}">${impactoFinal.toFixed(2)}%</span></p>
+      `;
+
+      document.getElementById('explicacion').innerHTML = `
+        <h3>🧾 Cómo interpretar el análisis</h3>
+        <ul>
+          <li><strong>Sin comprar</strong>: mantienes todo el capital invertido.</li>
+          <li><strong>Comprando</strong>: compras el bien y solo inviertes el dinero restante.</li>
+          <li>La diferencia muestra el coste de oportunidad de comprar.</li>
+          <li>${ajustar ? 'El rendimiento está ajustado por inflación.' : 'El rendimiento NO está ajustado por inflación.'}</li>
+        </ul>
+      `;
+
+      document.getElementById('resultado').style.display = 'block';
+
+      if (chart) chart.destroy();
+
+      chart = new Chart(document.getElementById('grafico'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Invertir sin comprar',
+              data: sinComprar,
+              borderColor: '#22c55e',
+              backgroundColor: 'rgba(34,197,94,.15)',
+              fill: true,
+              tension: .3
+            },
+            {
+              label: 'Comprar e invertir el resto',
+              data: comprando,
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239,68,68,.12)',
+              fill: true,
+              tension: .3
             }
-        }
-
-        function cambiarMoneda() {
-            moneda = moneda === "ARS" ? "USD" : "ARS";
-            document.getElementById("monedaTxt").innerText = moneda;
-        }
-
-        function f(v) {
-            return moneda === "USD"
-                ? "U$S " + (v / dolarBlue).toLocaleString("es-AR", { minimumFractionDigits: 2 })
-                : "$ " + v.toLocaleString("es-AR");
-        }
-
-        function calcular() {
-            const capitalEl = document.getElementById("capital");
-            const activosEl = document.getElementById("activos");
-            const precioEl = document.getElementById("precio");
-            const aporteEl = document.getElementById("aporte");
-            const tasaEl = document.getElementById("tasa");
-            const inflacionEl = document.getElementById("inflacion");
-            const aniosEl = document.getElementById("anios");
-            const ajustarInflacion = document.getElementById("ajustarInflacion");
-
-            let capital = +capitalEl.value || 0;
-            let activos = +activosEl.value || 0;
-            let precio = +precioEl.value || 0;
-            let aporte = +aporteEl.value || 0;
-            let tasa = (+tasaEl.value || 0) / 100;
-            let inflacion = (+inflacionEl.value || 0) / 100;
-            let anios = +aniosEl.value || 1;
-            let ajustar = ajustarInflacion.checked;
-
-            let patrimonio = capital + activos;
-            let restante = patrimonio - precio;
-
-            let tm = Math.pow(1 + tasa, 1 / 12) - 1;
-            let im = Math.pow(1 + inflacion, 1 / 12) - 1;
-            let r = ajustar ? (1 + tm) / (1 + im) - 1 : tm;
-
-            let labels = [], sin = [], con = [];
-
-            let html = `<table>
-<tr>
-<th>Año</th>
-<th>Invertir SIN comprar</th>
-<th>Invertir COMPRANDO</th>
-<th>Diferencia</th>
-<th>% vs SIN comprar</th>
-<th>% vs COMPRANDO</th>
-</tr>`;
-
-            for (let i = 1; i <= anios; i++) {
-                let n = i * 12;
-
-                const vf = (p, a, t) =>
-                    t === 0
-                        ? p + a * n
-                        : p * Math.pow(1 + t, n) + a * ((Math.pow(1 + t, n) - 1) / t);
-
-                let v1 = vf(patrimonio, aporte, r);
-                let v2 = vf(restante, aporte, r);
-
-                let diferencia = v1 - v2;
-
-                let porcentaje1 = v1 === 0 ? 0 : (diferencia / v1) * 100;
-                let porcentaje2 = v2 === 0 ? 0 : (diferencia / v2) * 100;
-
-                labels.push("Año " + i);
-                sin.push(v1);
-                con.push(v2);
-
-                html += `
-<tr>
-<td>${i}</td>
-<td>${f(v1)}</td>
-<td>${f(v2)}</td>
-<td class="${diferencia < 0 ? 'rojo' : 'highlight'}">${f(diferencia)}</td>
-<td class="${diferencia < 0 ? 'rojo' : 'highlight'}">${porcentaje1.toFixed(2)}%</td>
-<td class="${diferencia < 0 ? 'rojo' : 'highlight'}">${porcentaje2.toFixed(2)}%</td>
-</tr>`;
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#111827'
+              }
             }
-
-            document.getElementById("tabla").innerHTML = html + "</table>";
-            document.getElementById("resumenArea").style.display = "block";
-
-            let finalSin = sin.at(-1) || 0;
-            let finalCon = con.at(-1) || 0;
-            let difFinal = finalSin - finalCon;
-            let porcFinal = finalSin === 0 ? 0 : (difFinal / finalSin) * 100;
-
-            resumen.innerHTML = `
-<h3>Resultado</h3>
-<p>Diferencia final: <span class="${difFinal < 0 ? 'rojo' : 'highlight'}">${f(difFinal)}</span></p>
-<p>Impacto: <span class="${difFinal < 0 ? 'rojo' : 'highlight'}">${porcFinal.toFixed(2)}%</span></p>
-`;
-
-            // ✅ TEXTO EXPLICATIVO
-            document.getElementById("explicacion").innerHTML = `
-<h3>🧾 ¿Cómo leer este análisis?</h3>
-<p>Este cuadro compara dos decisiones:</p>
-<ul>
-<li><b>Invertir SIN comprar:</b> dejas todo tu dinero trabajando.</li>
-<li><b>Invertir COMPRANDO:</b> compras un bien y solo inviertes lo que te queda.</li>
-</ul>
-<p><b>Diferencia:</b> dinero extra que podrías tener si no compraras.</p>
-<p><b>Porcentajes:</b> indican qué tan grande es esa diferencia.</p>
-<p>⚠️ No es dinero perdido, es oportunidad.</p>
-<p>📉 Al principio impacta más, con el tiempo se reduce.</p>
-<p class="highlight">💡 A largo plazo, la decisión depende más de tu necesidad que del impacto financiero.</p>
-`;
-
-            if (chart) chart.destroy();
-
-            chart = new Chart(grafico, {
-                type: "line",
-                data: {
-                    labels,
-                    datasets: [
-                        { label: "Invertir sin comprar", data: sin, borderColor: "#22c55e" },
-                        { label: "Invertir comprando", data: con, borderColor: "#ef4444" }
-                    ]
-                }
-            });
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#111827'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#111827',
+                callback: value => moneda === 'USD'
+                  ? '$' + (value / dolarBlue).toFixed(0)
+                  : '$' + value.toLocaleString('es-AR')
+              }
+            }
+          }
         }
+      });
+    }
 
-        function generarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+    function generarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-            doc.text("Reporte Financiero", 15, 20);
+      doc.setFontSize(18);
+      doc.text('Reporte financiero', 15, 18);
 
-            doc.autoTable({
-                html: "#tabla table",
-                startY: 30
-            });
+      doc.setFontSize(10);
+      doc.text(`Fecha: ${new Date().toLocaleDateString('es-AR')}`, 15, 26);
+      doc.text(`Moneda mostrada: ${moneda}`, 15, 32);
 
-            doc.save("reporte.pdf");
+      const resumen = document.getElementById('resumen').innerText.split('\n');
+
+      let y = 42;
+      resumen.forEach(linea => {
+        if (linea.trim()) {
+          doc.text(linea, 15, y);
+          y += 6;
         }
+      });
 
-        sincronizarMercado();
-    </script>
+      doc.autoTable({
+        html: '#tabla table',
+        startY: y + 4,
+        styles: {
+          fontSize: 9
+        },
+        headStyles: {
+          fillColor: [34,197,94]
+        }
+      });
 
+      const canvas = document.getElementById('grafico');
+      const img = canvas.toDataURL('image/png');
+
+      doc.addPage();
+      doc.setFontSize(16);
+      doc.text('Gráfico comparativo', 15, 20);
+      doc.addImage(img, 'PNG', 10, 30, 190, 90);
+
+      doc.save('reporte-financiero.pdf');
+    }
+
+    document.getElementById('btnMoneda').addEventListener('click', () => {
+      moneda = moneda === 'ARS' ? 'USD' : 'ARS';
+      document.getElementById('monedaTxt').textContent = moneda;
+
+      if (document.getElementById('resultado').style.display === 'block') {
+        calcular();
+      }
+    });
+
+    document.getElementById('btnAnalizar').addEventListener('click', calcular);
+    document.getElementById('btnPDF').addEventListener('click', generarPDF);
+
+    cargarDatos();
+    sincronizarMercado();
+  </script>
 </body>
-
 </html>
+```
