@@ -3,6 +3,7 @@
 ```html
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,11 +12,12 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
-
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1408479860271651"
+    crossorigin="anonymous"></script>
   <style>
     :root {
       --bg: #020617;
-      --card: rgba(30,41,59,.78);
+      --card: rgba(30, 41, 59, .78);
       --border: #334155;
       --text: #e2e8f0;
       --accent: #22c55e;
@@ -62,7 +64,7 @@
 
     .card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .25);
     }
 
     .dolar-box {
@@ -78,7 +80,7 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
     }
 
@@ -119,7 +121,7 @@
     input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .15);
     }
 
     .checkbox {
@@ -185,7 +187,8 @@
       margin-top: 15px;
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px;
       border-bottom: 1px solid var(--border);
       text-align: left;
@@ -210,8 +213,8 @@
     }
 
     .warning {
-      background: rgba(239,68,68,.12);
-      border: 1px solid rgba(239,68,68,.35);
+      background: rgba(239, 68, 68, .12);
+      border: 1px solid rgba(239, 68, 68, .35);
       color: #fecaca;
       padding: 12px;
       border-radius: 12px;
@@ -220,6 +223,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>Calculadora Financiera Argentina 2026</h1>
@@ -227,6 +231,13 @@
 
     <div class="card dolar-box" id="dolarBox">
       Sincronizando cotizaciones...
+    </div>
+    <div class="card" style="text-align:center; padding:18px;">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1408479860271651" data-ad-slot="1234567890"
+        data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
 
     <div class="topbar">
@@ -308,7 +319,7 @@
       maximumFractionDigits: 2
     });
 
-    const campos = ['capital','activos','precio','tasa','inflacion','aporte','anios'];
+    const campos = ['capital', 'activos', 'precio', 'tasa', 'inflacion', 'aporte', 'anios'];
 
     function guardarDatos() {
       campos.forEach(id => localStorage.setItem(id, document.getElementById(id).value));
@@ -577,7 +588,7 @@
           fontSize: 9
         },
         headStyles: {
-          fillColor: [34,197,94]
+          fillColor: [34, 197, 94]
         }
       });
 
@@ -608,5 +619,6 @@
     sincronizarMercado();
   </script>
 </body>
+
 </html>
 ```
