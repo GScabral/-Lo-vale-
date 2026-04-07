@@ -221,6 +221,66 @@
       margin-bottom: 15px;
       display: none;
     }
+
+    @media (max-width: 760px) {
+      .container {
+        display: flex;
+        /* Asegúrate de que tenga display flex */
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+      }
+    }
+
+    .checkbox {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    button,
+    .btn-primary,
+    .btn-pdf,
+    .btn-toggle {
+      width: 100%;
+      min-width: 0;
+    }
+
+    #graficoCont {
+      overflow-x: auto;
+      padding: 10px;
+    }
+
+    #grafico {
+      min-width: 520px;
+      height: 260px !important;
+    }
+
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    th,
+    td {
+      font-size: .82rem;
+      padding: 10px 8px;
+    }
+
+
+    @media (max-width: 480px) {
+      body {
+        padding: 8px;
+      }
+
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      #grafico {
+        min-width: 460px;
+      }
+    }
   </style>
 </head>
 
@@ -286,6 +346,13 @@
 
       <button class="btn-primary" id="btnAnalizar">ANALIZAR</button>
       <button class="btn-pdf" id="btnPDF">DESCARGAR PDF</button>
+    </div>
+    <div class="card" style="text-align:center; padding:18px;">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1408479860271651" data-ad-slot="2345678901"
+        data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
 
     <div id="resultado" style="display:none;">
